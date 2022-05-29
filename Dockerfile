@@ -2,16 +2,17 @@ FROM debian:bullseye-slim
 
 MAINTAINER lcdunne
 
-RUN apt-get update \
-    && apt-get install -y python3 \
-    && apt install -y default-jre \
-    && apt install -y default-jdk \
-    && echo javac -version \
-    && apt-get -y install scala \
-    && apt-get -y install wget \
+COPY sparky/ sparky/
+
+RUN apt update \
+    && apt install -y python3 default-jre default-jdk scala wget \
     && wget https://downloads.apache.org/spark/spark-3.1.2/spark-3.1.2-bin-hadoop3.2.tgz \
     && tar -xvzf spark-3.1.2-bin-hadoop3.2.tgz \
-    && mkdir -p /local/spark \
-    && mv spark-3.1.2-bin-hadoop3.2 /usr/local/spark
+    && mv spark-3.1.2-bin-hadoop3.2 /usr/local/spark && rm spark-3.1.2-bin-hadoop3.2.tgz
+
+# Change logging to only show errors.
+RUN sed -i "s|log4j.rootCategory=INFO|log4j.rootCategory=ERROR|g" \
+    /usr/local/spark/conf/log4j.properties.template \
+    && mv /usr/local/spark/conf/log4j.properties.template /usr/local/spark/conf/log4j.properties
 
 ENV PATH="$PATH:/usr/local/spark/bin"
