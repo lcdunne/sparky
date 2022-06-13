@@ -2,7 +2,7 @@ FROM debian:bullseye-slim
 
 MAINTAINER lcdunne
 
-COPY sparky/ sparky/
+COPY . sparky/
 
 RUN apt update \
     && apt install -y python3 default-jre default-jdk scala wget \
